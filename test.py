@@ -72,6 +72,40 @@ def isis_check(input):
     if adj_counter != 2:
         print("ERROR: Unexpected number of adjacencies -- found {}, expecting 2".format(adj_counter))
 
+def rsvp_check(input):
+    '''
+    This does a check against the RSVP neighbors and their
+    current status.  It will check on the following:
+     1) Verify that the neighbor is in an "up" state
+     2) Verify the expected RSVP flags are seen
+     3) Verify the expected two neighbors
+    '''
+
+    #Variables
+    nei_counter = 0
+
+    #begin function output
+    print()
+    print("{}".format("="*30))
+    print("{:^30}".format("RSVP Neighbor Check"))
+    print("{}".format("="*30))
+
+    for line in input.splitlines():
+
+        if not re.search(r'to-.*mplse1', line):
+            continue
+
+        split_list = line.split()
+        if split_list[2] != "Up":
+            print ("ERROR: RSVP Neighbor on {} is not 'Up'".format(split_list[1]))
+
+        if (split_list[5] != "LR") or (split_list[6] != "RR") or (split_list[7] != "RM"):
+            print("ERROR: Unexpected RSVP flags on {}".format(split_list[1]))
+
+        nei_counter += 1
+
+    if nei_counter != 2:
+        print("ERROR: Unexpected number of neighbors -- found {}, expecting 2".format(nei_counter))
 
 #====================================
 #           Main Routine            =
@@ -82,6 +116,10 @@ with open("router_interfaces.txt") as a:
 
 with open("isis_adj.txt") as b:
     b_output = b.read()
+
+with open("rsvp_neighbors.txt") as c:
+    c_output = c.read()
  
 int_check(a_output)
 isis_check(b_output)
+rsvp_check(c_output)
